@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="localhost" port="5000" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration" protocol="HTTPS" host="apis.bbva.com" port="443" doc:name="HTTP Request Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration1" host="localhost" port="5001" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration1" protocol="HTTPS" host="apis.bbva.com" port="443" doc:name="HTTP Request Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration2" host="localhost" port="5002" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration2" protocol="HTTPS" host="apis.bbva.com" port="443" doc:name="HTTP Request Configuration"/>
+    <flow name="bbvaintegrationFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/accounts-sbx/v1/me/accounts/ES0182002000000000500000000332067033XXXXXXXXX/transactions" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="Authorization" value="jwt eyJ6aXAiOiJERUYiLCJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.Lj3_87DIsbqfFUtfsJeQiJ_iHQoaM3H9JpgHtq8BVIYqPzjhPnfP6R9YdPM0WlsaZysrTZ2ypgTDJaj7gAJtMrAwfod2R_0u99dHKrxeS5KIH2fEJbeaZ4k8IR41yJYgCVEJ81Vms5gMywBPz6-C8zsIVQ4EuBeFD9ZYW5MlriKLcoSyRqCl_4aJi0DRnj7o27ygqR4wzR_1QKpxb7LjsozTpAi4V1Q5ri8XCbXUMpn1ftIfcE0jmr72vcO55UwdagCHNno1Y3q8xK-lPFSWIt6FXjZO_0EjREvrbUyhFYTKXQLNPuQX0UOPyKhmWjbTQAlTylYD8YJauKb9RMrQYw.plmQgDUULWsgSDOO.RRKBiqie8FA-_ZYYii6xgxkSM1FJJPys35cF2l-5SyMBoCzdA-6NXQtjwiZ6tL_ktk38GHn9AijNuYOlBmcE-OZog7kZIXigpprsOwxymbjXRAvlNqpqcvPIdRyYFMUl21wt-stR5f2OVZo0ndXA9JurnN2TpXMMPmzF1W8_xXm3JHla3hJnO-_EFy9O0VMVTdAApm7W3stnAIs9LLbtj0zkAHfe_dSX7dI8LqZ96W2bz9LqlOzgSmZMbHe6AkANwqdywAvzcTaIfLf5fFElFNKgJ6ffq4FQJ2GbVa71JyVF3D1yK2qIt8UbRQCvmY0.1BBXFyy31_v72C2mvqyUWA"/>
+                <http:header headerName="Accept" value="application/json"/>
+            </http:request-builder>
+        </http:request>
+        <logger message="#[message]" level="INFO" doc:name="Logger"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <logger message="#[payload.data.accountTransactions]" level="INFO" doc:name="Logger"/>
+    </flow>
+    <flow name="bbvaintegrationFlow1">
+        <http:listener config-ref="HTTP_Listener_Configuration1" path="/" doc:name="HTTP"/>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/accounts-sbx/v1/me/accounts" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="Authorization" value="jwt eyJ6aXAiOiJERUYiLCJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.Lj3_87DIsbqfFUtfsJeQiJ_iHQoaM3H9JpgHtq8BVIYqPzjhPnfP6R9YdPM0WlsaZysrTZ2ypgTDJaj7gAJtMrAwfod2R_0u99dHKrxeS5KIH2fEJbeaZ4k8IR41yJYgCVEJ81Vms5gMywBPz6-C8zsIVQ4EuBeFD9ZYW5MlriKLcoSyRqCl_4aJi0DRnj7o27ygqR4wzR_1QKpxb7LjsozTpAi4V1Q5ri8XCbXUMpn1ftIfcE0jmr72vcO55UwdagCHNno1Y3q8xK-lPFSWIt6FXjZO_0EjREvrbUyhFYTKXQLNPuQX0UOPyKhmWjbTQAlTylYD8YJauKb9RMrQYw.plmQgDUULWsgSDOO.RRKBiqie8FA-_ZYYii6xgxkSM1FJJPys35cF2l-5SyMBoCzdA-6NXQtjwiZ6tL_ktk38GHn9AijNuYOlBmcE-OZog7kZIXigpprsOwxymbjXRAvlNqpqcvPIdRyYFMUl21wt-stR5f2OVZo0ndXA9JurnN2TpXMMPmzF1W8_xXm3JHla3hJnO-_EFy9O0VMVTdAApm7W3stnAIs9LLbtj0zkAHfe_dSX7dI8LqZ96W2bz9LqlOzgSmZMbHe6AkANwqdywAvzcTaIfLf5fFElFNKgJ6ffq4FQJ2GbVa71JyVF3D1yK2qIt8UbRQCvmY0.1BBXFyy31_v72C2mvqyUWA"/>
+                <http:header headerName="Accept" value="application/json"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+    <flow name="bbvaintegrationFlow2">
+        <http:listener config-ref="HTTP_Listener_Configuration2" path="/" doc:name="HTTP"/>
+        <custom-transformer class="bbvaintegration.SplitDates" doc:name="Java"/>
+        <http:request config-ref="HTTP_Request_Configuration2" path="/accounts-sbx/v1/me/accounts/ES0182002000000000500000000332067033XXXXXXXXX/transactions?dateFrom=#[sessionVars.date_from]&amp;dateTo=#[sessionVars.date_to]" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="Authorization" value="jwt eyJ6aXAiOiJERUYiLCJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.Lj3_87DIsbqfFUtfsJeQiJ_iHQoaM3H9JpgHtq8BVIYqPzjhPnfP6R9YdPM0WlsaZysrTZ2ypgTDJaj7gAJtMrAwfod2R_0u99dHKrxeS5KIH2fEJbeaZ4k8IR41yJYgCVEJ81Vms5gMywBPz6-C8zsIVQ4EuBeFD9ZYW5MlriKLcoSyRqCl_4aJi0DRnj7o27ygqR4wzR_1QKpxb7LjsozTpAi4V1Q5ri8XCbXUMpn1ftIfcE0jmr72vcO55UwdagCHNno1Y3q8xK-lPFSWIt6FXjZO_0EjREvrbUyhFYTKXQLNPuQX0UOPyKhmWjbTQAlTylYD8YJauKb9RMrQYw.plmQgDUULWsgSDOO.RRKBiqie8FA-_ZYYii6xgxkSM1FJJPys35cF2l-5SyMBoCzdA-6NXQtjwiZ6tL_ktk38GHn9AijNuYOlBmcE-OZog7kZIXigpprsOwxymbjXRAvlNqpqcvPIdRyYFMUl21wt-stR5f2OVZo0ndXA9JurnN2TpXMMPmzF1W8_xXm3JHla3hJnO-_EFy9O0VMVTdAApm7W3stnAIs9LLbtj0zkAHfe_dSX7dI8LqZ96W2bz9LqlOzgSmZMbHe6AkANwqdywAvzcTaIfLf5fFElFNKgJ6ffq4FQJ2GbVa71JyVF3D1yK2qIt8UbRQCvmY0.1BBXFyy31_v72C2mvqyUWA"/>
+                <http:header headerName="Accept" value="application/json"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+</mule>
